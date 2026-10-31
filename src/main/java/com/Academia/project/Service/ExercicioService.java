@@ -35,10 +35,12 @@ public class ExercicioService {
                         .build()
         );
     }
-    private void cadastrarEx_Treino(TreinosDTO dtoT, ExercicioDTO dtoE){
+    private void cadastrarEx_Treino(TreinosDTO TtoT, ExercicioDTO dtoE){
 
-        TreinosEntity treino = treinoService.receberTreino(dtoT.getNome());
         ExerciciosEntity ex = receberExercicio(dtoE.getNome(), dtoE.getTipo());
+
+        TreinosEntity treino = trienosRepository.findByNome(TtoT.getNome())
+                .orElseThrow( () -> new IllegalArgumentException("Ocorreu um erro na operacao."));
 
         treino.addExercicio(ex);
     }

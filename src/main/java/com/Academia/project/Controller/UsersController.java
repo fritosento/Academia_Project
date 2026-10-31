@@ -1,8 +1,10 @@
 package com.Academia.project.Controller;
 
-import com.Academia.project.DTO.*;
+import com.Academia.project.DTO.CriarClienteDTO;
+import com.Academia.project.DTO.ExercicioDTO;
+import com.Academia.project.DTO.ResponseClienteDTO;
+import com.Academia.project.DTO.ResponseTreino_clienteDTO;
 import com.Academia.project.ESTADOS.Treinos_Tipos;
-import com.Academia.project.Model.TreinosEntity;
 import com.Academia.project.Model.UserEntity;
 import com.Academia.project.Service.TreinoService;
 import com.Academia.project.Service.UsersService;

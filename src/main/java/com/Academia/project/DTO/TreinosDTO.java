@@ -2,13 +2,14 @@ package com.Academia.project.DTO;
 
 import com.Academia.project.ESTADOS.Treinos_Tipos;
 import com.Academia.project.Model.ExerciciosEntity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+import com.Academia.project.Model.UserEntity;
+import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.beans.BeanUtils;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -17,15 +18,18 @@ import java.util.Set;
 @Builder
 public class TreinosDTO {
 
+    private UserEntity usuario;
+
+    private Set<ExerciciosEntity> exercicios = new HashSet<>();
+
     private String nome;
+
     private String descricao;
+
     @Enumerated(EnumType.STRING)
     private Treinos_Tipos tipo;
 
-    private Set<ExercicioDTO> listaTreinosDTO = new HashSet<>();
 
-    @Builder.Default
-    private Set<ExercicioDTO> treinos = new HashSet<>();
 
     public TreinosDTO(TreinosDTO treinosEntity) {
         BeanUtils.copyProperties(treinosEntity,this);

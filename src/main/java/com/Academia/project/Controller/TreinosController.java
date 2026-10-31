@@ -1,12 +1,7 @@
 package com.Academia.project.Controller;
 
-import com.Academia.project.DTO.ExercicioDTO;
 import com.Academia.project.DTO.ExercicioListDTO;
 import com.Academia.project.DTO.TreinosDTO;
-import com.Academia.project.Model.ExerciciosEntity;
-import com.Academia.project.Model.TreinosEntity;
-import com.Academia.project.Repository.ExercicioRepository;
-import com.Academia.project.Repository.TreinosRepository;
 import com.Academia.project.Service.TreinoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -22,11 +17,11 @@ public class TreinosController {
 
 
     @GetMapping()
-    public ResponseEntity<TreinosEntity> receberTreino(
+    public ResponseEntity<TreinosDTO> receberTreino(
             @RequestParam String nome
     ){
-        TreinosEntity treino = treinoService.receberTreino(nome);
-        return ResponseEntity.ok(treino);
+
+        return ResponseEntity.ok(treinoService.receberTreino(nome));
     }
 
     @PostMapping("/Criar")

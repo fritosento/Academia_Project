@@ -1,6 +1,7 @@
 package com.Academia.project.Service;
 
 import com.Academia.project.DTO.ExercicioListDTO;
+import com.Academia.project.DTO.ResponseClienteDTO;
 import com.Academia.project.DTO.TreinosDTO;
 import com.Academia.project.ESTADOS.Treinos_Tipos;
 import com.Academia.project.DTO.ResponseTreino_clienteDTO;
@@ -26,11 +27,21 @@ public class TreinoService {
     private final ExercicioRepository exercicioRepository;
 
 
-    public TreinosEntity receberTreino(
+    public TreinosDTO receberTreino(
              String nome) {
-        return treinosRepository.findByNome(nome)
+        TreinosEntity t = treinosRepository.findByNome(nome)
                 .orElseThrow(() -> new IllegalArgumentException("Ocorreu um erro na busca!")
                 );
+
+        return new TreinosDTO(TreinosDTO
+                .builder()
+                .usuario(t.getUsuario())
+                .exercicios(t.getExercicios())
+                .nome(t.getNome())
+                .descricao(t.getDescription())
+                .tipo(t.getTipo())
+                .build());
+
     }
 
     public List<ResponseTreino_clienteDTO> receberTreinoUser(Treinos_Tipos Tipo, String email) {
@@ -72,8 +83,12 @@ public class TreinoService {
             treino.addExercicio(ex);
         }
     }
-    public void adcionarUser_Treino(TreinosEntity treino, UserEntity user) {
+    public void adcionarUser_Treino(TreinosDTO treinoDTO, ResponseClienteDTO userDTO) {
 
+        UserEntity user = usersRepository.findByEmail(userDTO.getEmail())
+                .orElseThrow(() -> new IllegalArgumentException("Ocorreu um erro na operacao"));
+        TreinosEntity treino = treinosRepository.findByNome(treinoDTO.getNome())
+                .orElseThrow(() -> new IllegalArgumentException("Ocorreu um erro na operacao"));
 
         treino.setUsuario(user);
         treinosRepository.save(treino);

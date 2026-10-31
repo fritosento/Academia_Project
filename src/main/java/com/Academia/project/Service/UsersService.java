@@ -1,9 +1,9 @@
 package com.Academia.project.Service;
 
 import com.Academia.project.DTO.CriarClienteDTO;
+import com.Academia.project.DTO.ResponseClienteDTO;
 import com.Academia.project.DTO.TreinosDTO;
 import com.Academia.project.ESTADOS.StausClient;
-import com.Academia.project.Model.TreinosEntity;
 import com.Academia.project.Model.UserEntity;
 import com.Academia.project.Repository.UsersRepository;
 import lombok.RequiredArgsConstructor;
@@ -43,9 +43,9 @@ public class UsersService {
             throw new IllegalArgumentException("Usuario não registrado");
         }
 
-        TreinosEntity treino = treinoService.receberTreino(nomeTreino);
+        TreinosDTO treino = treinoService.receberTreino(nomeTreino);
 
-        treinoService.adcionarUser_Treino(treino, user);
+        treinoService.adcionarUser_Treino(treino, new ResponseClienteDTO(user));
     }
 
 
