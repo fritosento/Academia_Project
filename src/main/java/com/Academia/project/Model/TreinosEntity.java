@@ -1,12 +1,11 @@
 package com.Academia.project.Model;
 
+import com.Academia.project.DTO.Retornar.ResponseExercicioComTreino;
 import com.Academia.project.ESTADOS.Treinos_Tipos;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Entity
 @Getter
@@ -38,12 +37,10 @@ public class TreinosEntity {
 
     @OneToMany(mappedBy = "treino", cascade = CascadeType.ALL)
     @Builder.Default
-    private Set<ExerciciosEntity> exercicios = new HashSet<>();
+    private List<ExerciciosEntity> exercicios = new ArrayList<>();
 
-    public void addExercicio(ExerciciosEntity ex) {
-        exercicios.add(ex);
-        ex.setTreino(this);
+    public void addExercicio(ExerciciosEntity exercicio) {
+        exercicios.add(exercicio);
     }
-
 
 }

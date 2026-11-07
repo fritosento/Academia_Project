@@ -1,10 +1,12 @@
 package com.Academia.project.Service;
 
-import com.Academia.project.DTO.ExercicioListDTO;
-import com.Academia.project.DTO.ResponseClienteDTO;
-import com.Academia.project.DTO.TreinosDTO;
+import com.Academia.project.DTO.Criar.CriarTreinoDTO;
+import com.Academia.project.DTO.Retornar.ResponseExercicioComTreino;
+import com.Academia.project.DTO.Retornar.ResponseTreino;
+import com.Academia.project.DTO.Retornar.RetornoClienteDTO;
+import com.Academia.project.DTO.Retornar.RetornoExercicioDTO.ResponseExercicio;
 import com.Academia.project.ESTADOS.Treinos_Tipos;
-import com.Academia.project.DTO.ResponseTreino_clienteDTO;
+import com.Academia.project.Exeption.IllegalEX;
 import com.Academia.project.Model.ExerciciosEntity;
 import com.Academia.project.Model.TreinosEntity;
 import com.Academia.project.Model.UserEntity;
@@ -12,7 +14,6 @@ import com.Academia.project.Repository.ExercicioRepository;
 import com.Academia.project.Repository.TreinosRepository;
 import com.Academia.project.Repository.UsersRepository;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.Response;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,70 +28,65 @@ public class TreinoService {
     private final ExercicioRepository exercicioRepository;
 
 
-    public TreinosDTO receberTreino(
+    public ResponseTreino receberTreino(
              String nome) {
         TreinosEntity t = treinosRepository.findByNome(nome)
-                .orElseThrow(() -> new IllegalArgumentException("Ocorreu um erro na busca!")
+                .orElseThrow(() -> new IllegalEX("Ocorreu um erro na busca!")
                 );
 
-        return new TreinosDTO(TreinosDTO
-                .builder()
-                .usuario(t.getUsuario())
-                .exercicios(t.getExercicios())
-                .nome(t.getNome())
-                .descricao(t.getDescription())
-                .tipo(t.getTipo())
-                .build());
+        return ResponseTreino.from(t);
 
     }
 
-    public List<ResponseTreino_clienteDTO> receberTreinoUser(Treinos_Tipos Tipo, String email) {
+    public List<ResponseTreino> receberTreinoUser(Treinos_Tipos Tipo, String email) {
 
         System.out.println(treinosRepository.findByTipoAndUsuarioEmail(Tipo, email));
-        List<ResponseTreino_clienteDTO> treinos = treinosRepository.findByTipoAndUsuarioEmail(Tipo, email)
+        List<ResponseTreino> treinos = treinosRepository.findByTipoAndUsuarioEmail(Tipo, email)
                 .stream()
-                .map(ResponseTreino_clienteDTO::retorno)
+                .map(ResponseTreino::from)
                 .toList();
+
         if (treinos.isEmpty()) {
-            throw new IllegalArgumentException("Ocorreu um erro na busca!");
+            throw new IllegalEX("Ocorreu um erro na busca!");
         }
         return treinos;
     }
 
 
-    public void criarTreino(TreinosDTO dto) {
+    public void criarTreino(CriarTreinoDTO dto) {
 
         treinosRepository.save(
                 TreinosEntity.builder()
-                        .nome(dto.getNome().toUpperCase())
-                        .description(dto.getDescricao().toUpperCase())
-                        .tipo(dto.getTipo())
+                        .nome(dto.nome().toUpperCase())
+                        .description(dto.descricao().toUpperCase())
+                        .tipo(dto.tipos())
                         .build()
         );
 
     }
 
-    public void criarTreinoComExercicio(TreinosDTO treinosDTO, ExercicioListDTO exListDTO) {
+    public void adcionarUser_Treino(ResponseTreino treinoDTO, RetornoClienteDTO.ResponseCliente userDTO) {
 
-        criarTreino(treinosDTO);
-
-        TreinosEntity treino = treinosRepository.findByNome(treinosDTO.getNome())
-                .orElseThrow(() -> new IllegalArgumentException("Ocorreu um erro na busca!"));
-
-        for (ExerciciosEntity exercicio : exListDTO.getExercicios()) {
-            ExerciciosEntity ex = exercicioRepository.findByNomeAndTipo(exercicio.getNome(), exercicio.getTipo())
-                    .orElseThrow(() -> new IllegalArgumentException("Ocorreu um erro na busca!"));
-            treino.addExercicio(ex);
-        }
-    }
-    public void adcionarUser_Treino(TreinosDTO treinoDTO, ResponseClienteDTO userDTO) {
-
-        UserEntity user = usersRepository.findByEmail(userDTO.getEmail())
-                .orElseThrow(() -> new IllegalArgumentException("Ocorreu um erro na operacao"));
-        TreinosEntity treino = treinosRepository.findByNome(treinoDTO.getNome())
-                .orElseThrow(() -> new IllegalArgumentException("Ocorreu um erro na operacao"));
+        UserEntity user = usersRepository.findByEmail(userDTO.email())
+                .orElseThrow(() -> new IllegalEX("Ocorreu um erro na operacao"));
+        TreinosEntity treino = treinosRepository.findByNome(treinoDTO.nome())
+                .orElseThrow(() -> new IllegalEX("Ocorreu um erro na operacao"));
 
         treino.setUsuario(user);
         treinosRepository.save(treino);
+    }
+
+    public void adcionarExercicioEmTreino(String nomeTreino, String nomeExercicio) {
+
+        TreinosEntity treino = treinosRepository.findByNome(nomeTreino)
+                .orElseThrow(() -> new IllegalEX("Ocorreu um erro na operacao"));
+        ExerciciosEntity ex = exercicioRepository.findByNome(nomeExercicio)
+                .orElseThrow(() -> new IllegalEX("Ocorreu um erro na operacao"));
+
+        ex.setTreino(treino);
+        treino.addExercicio(ex);
+
+        exercicioRepository.save(ex);
+
     }
 }

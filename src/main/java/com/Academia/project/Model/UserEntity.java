@@ -6,6 +6,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.*;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -34,7 +36,11 @@ public class UserEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
-    private StausClient status;
+    private StausClient status = StausClient.SEM_REGISTRO;
+
+    private Instant horarioDeCriacao;
+
+    private Instant horarioDeAtualizacao;
 
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
     @Builder.Default
@@ -43,5 +49,27 @@ public class UserEntity {
     public void addTreino(TreinosEntity treino){
         treinos.add(treino);
         treino.setUsuario(this);
+    }
+
+
+    @PreUpdate
+    public void dateTime(){
+
+        Instant agora =  Instant.now();
+        if(status == StausClient.ATIVO  && horarioDeCriacao == null){
+            horarioDeCriacao = agora;
+            if (horarioDeAtualizacao == null) {
+                horarioDeAtualizacao = agora;
+            }
+
+        }
+    }
+
+    @PrePersist
+    public void dateTime_update(){
+        if(status == StausClient.ATIVO &&  horarioDeAtualizacao != null){
+            horarioDeAtualizacao = Instant.now();
+
+        }
     }
 }

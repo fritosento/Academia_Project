@@ -1,14 +1,12 @@
 package com.Academia.project.Controller;
 
-import com.Academia.project.DTO.CriarClienteDTO;
-import com.Academia.project.DTO.ExercicioDTO;
-import com.Academia.project.DTO.ResponseClienteDTO;
-import com.Academia.project.DTO.ResponseTreino_clienteDTO;
+import com.Academia.project.DTO.Criar.CriarClienteDTO;
+import com.Academia.project.DTO.Retornar.ResponseTreino;
+import com.Academia.project.DTO.Retornar.RetornoClienteDTO.ResponseCliente;
+import com.Academia.project.DTO.Retornar.RetornoExercicioDTO.ResponseExercicio;
 import com.Academia.project.ESTADOS.Treinos_Tipos;
-import com.Academia.project.Model.UserEntity;
 import com.Academia.project.Service.TreinoService;
 import com.Academia.project.Service.UsersService;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,15 +24,13 @@ public class UsersController {
 
 
     @GetMapping("/perfil")
-    public  ResponseEntity<ResponseClienteDTO> getUsuario(
+    public  ResponseEntity<ResponseCliente> getUsuario(
             @RequestParam String email
             ) {
-        UserEntity user = usersService.getCliente(email);
-        return ResponseEntity.ok(new ResponseClienteDTO(user));
+        return ResponseEntity.ok(usersService.getCliente(email));
     }
-
     @GetMapping("/perfil/treino")
-    public ResponseEntity<List<ResponseTreino_clienteDTO>> getTreinosCLientes(
+    public ResponseEntity<List<ResponseTreino>> getTreinosCLientes(
             @RequestParam String email,
             @RequestParam Treinos_Tipos tipo
     ){
@@ -42,15 +38,35 @@ public class UsersController {
     }
 
     @PostMapping("/cadastro")
-    public ResponseEntity<ResponseClienteDTO> cadastroUsuario(
-            @RequestBody @Valid CriarClienteDTO clienteDTO
+    public ResponseEntity<Void> cadastroUsuario(
+            @RequestBody CriarClienteDTO clienteDTO
     ){
-        usersService.save(clienteDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        usersService.criarUsuario(clienteDTO);
+        usersService.ativarStatusCliente(clienteDTO.email());
+
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
+    @PostMapping("/admSecreto/ativar")
+    public ResponseEntity<Void> admSecretoAtivarUsuario(
+            @RequestParam String email
+    ){
+        usersService.ativarStatusCliente(email);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @PostMapping("/admSecreto/banir")
+    public ResponseEntity<Void> admSecretoBanir(
+            @RequestParam String email
+    ){
+        usersService.BanirStatusCliente(email);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+
+
     @PostMapping("/Treinos/cadastrar")
-    public ResponseEntity<ExercicioDTO> cadastrarTreino(
+    public ResponseEntity<Void> cadastrarTreino(
             @RequestParam String email,
             @RequestParam String nomeTreino
     ){

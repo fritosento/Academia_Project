@@ -4,6 +4,7 @@ import com.Academia.project.ESTADOS.Treinos_Tipos;
 import com.Academia.project.Model.ExerciciosEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -14,5 +15,6 @@ public interface ExercicioRepository extends JpaRepository<ExerciciosEntity, UUI
 
     Optional<ExerciciosEntity> findByTipoOrNome(String tipo, String nome);
 
-    Optional<ExerciciosEntity> findByNomeAndTipo(String nome, String tipo);
+    List<ExerciciosEntity> findAllByNomeAndTipo(String nome, Treinos_Tipos tipo);
+    List<ExerciciosEntity> findAllByTipo( Treinos_Tipos tipo);
 }

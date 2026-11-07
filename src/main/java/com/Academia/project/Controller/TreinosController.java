@@ -1,7 +1,7 @@
 package com.Academia.project.Controller;
 
-import com.Academia.project.DTO.ExercicioListDTO;
-import com.Academia.project.DTO.TreinosDTO;
+import com.Academia.project.DTO.Criar.CriarTreinoDTO;
+import com.Academia.project.DTO.Retornar.ResponseTreino;
 import com.Academia.project.Service.TreinoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,7 +17,7 @@ public class TreinosController {
 
 
     @GetMapping()
-    public ResponseEntity<TreinosDTO> receberTreino(
+    public ResponseEntity<ResponseTreino> receberTreino(
             @RequestParam String nome
     ){
 
@@ -26,7 +26,8 @@ public class TreinosController {
 
     @PostMapping("/Criar")
     public ResponseEntity<Void> criarTreino(
-            @RequestBody TreinosDTO treinosDTO ) {
+            @RequestBody CriarTreinoDTO treinosDTO
+    ) {
 
         treinoService.criarTreino(treinosDTO);
 
@@ -34,18 +35,13 @@ public class TreinosController {
 
     }
 
-    @PostMapping("/Criar/completo")
-    public ResponseEntity<Void> cadastrarTreinoComExercicio(
-            @RequestBody TreinosDTO treinosDTO,
-            @RequestBody ExercicioListDTO exListDTO) {
-
-
-        treinoService.criarTreinoComExercicio(treinosDTO, exListDTO);
-
-        return ResponseEntity.status(HttpStatus.CREATED).build();
-
+    @PostMapping("/inserir")
+    public ResponseEntity<Void> inserirEx(
+            @RequestParam String nomeTreino,
+            @RequestParam String nomeExercicio
+    ){
+        treinoService.adcionarExercicioEmTreino(nomeTreino, nomeExercicio);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
-
-
 
 }

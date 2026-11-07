@@ -1,48 +1,42 @@
 package com.Academia.project.Service;
 
-import com.Academia.project.DTO.ExercicioDTO;
-import com.Academia.project.DTO.TreinosDTO;
+import com.Academia.project.DTO.Criar.CriarExercicioDTO;
+import com.Academia.project.DTO.Retornar.RetornoExercicioDTO.ResponseExercicio;
+import com.Academia.project.ESTADOS.Treinos_Tipos;
 import com.Academia.project.Model.ExerciciosEntity;
-import com.Academia.project.Model.TreinosEntity;
 import com.Academia.project.Repository.ExercicioRepository;
 import com.Academia.project.Repository.TreinosRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @Service
 public class ExercicioService {
 
     private final ExercicioRepository exercicioRepository;
-    private final TreinoService treinoService;
-    private final TreinosRepository trienosRepository;
 
-    private ExerciciosEntity receberExercicio(String nome, String tipo){
+    public List<ResponseExercicio> receberExercicio( Treinos_Tipos tipo){
 
-        return exercicioRepository.findByNomeAndTipo(nome, tipo)
-                .orElseThrow(() -> new IllegalArgumentException("Ocorreu um erro na operação"));
+        return exercicioRepository.findAllByTipo( tipo)
+                .stream()
+                .map(ResponseExercicio::from)
+                .toList();
 
     }
 
-    private void criarExercicio(ExercicioDTO dto){
-
+    public void criarExercicio(CriarExercicioDTO dto){
 
         exercicioRepository.save(
                 ExerciciosEntity.builder()
-                        .tipo(dto.getTipo())
-                        .nome(dto.getNome())
-                        .description(dto.getDescricao())
+                        .tipo(dto.tipo())
+                        .nome(dto.nome())
+                        .description(dto.descricao())
                         .build()
         );
     }
-    private void cadastrarEx_Treino(TreinosDTO TtoT, ExercicioDTO dtoE){
 
-        ExerciciosEntity ex = receberExercicio(dtoE.getNome(), dtoE.getTipo());
 
-        TreinosEntity treino = trienosRepository.findByNome(TtoT.getNome())
-                .orElseThrow( () -> new IllegalArgumentException("Ocorreu um erro na operacao."));
-
-        treino.addExercicio(ex);
-    }
 
 }
